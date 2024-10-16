@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>underage & overserved - elevated event services</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+--bg-color: #1a1a1a;
+--text-color: #ffffff;
+}
+body, html {
+margin: 0;
+padding: 0;
+background-color: var(--bg-color);
+color: var(--text-color);
+font-family: 'Playfair Display', serif;
+font-style: italic;
+overflow-x: hidden;
+text-transform: lowercase;
+}
+.header, .footer {
+position: fixed;
+left: 0;
+right: 0;
+background-color: #1a1a1a;
+padding: 20px;
+z-index: 1000;
+text-align: center;
+font-size: 1vw;
+transition: opacity 1s, transform 1s;
+}
+.header {
+top: 0;
+transform: translateY(-100%);
+}
+.footer {
+bottom: 0;
+transform: translateY(100%);
+}
+.header.visible, .footer.visible {
+transform: translateY(0);
+}
+.section {
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+padding: 50px 10%;
+}
+.logo-section {
+text-align: left;
+}
+.logo {
+font-size: 6vw;
+margin-bottom: 20px;
+line-height: 0.9;
+}
+.logo-underage {
+font-family: 'Playfair Display', serif;
+font-style: italic;
+font-weight: 400;
+}
+.logo-overserved {
+font-family: 'Montserrat', sans-serif;
+font-weight: 300;
+letter-spacing: 2px;
+}
+.logo-underline {
+width: 0;
+height: 3px;
+background-color: var(--text-color);
+transition: width 1.5s ease-out;
+}
+.logo-underline.visible {
+width: 100%;
+}
+.quote {
+font-size: 2vw;
+margin-top: 20px;
+opacity: 0;
+transform: translateY(50px);
+transition: opacity 1s, transform 1s;
+transition-delay: 0.5s;
+}
+.litmus-test-section {
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 50px 10%;
+background-color: #ffffff;
+color: #1a1a1a;
+overflow: hidden; /* Add this line */
+}
+.litmus-test {
+font-size: 1.5vw;
+text-align: left;
+color: #1a1a1a;
+white-space: normal;
+word-wrap: break-word;
+line-height: 1.5;
+width: 100%;
+font-style: italic;
+max-width: 100%;
+overflow-wrap: break-word;
+}
+
+.litmus-test span {
+display: inline;
+opacity: 0;
+transform: translateY(20px);
+transition: opacity 0.05s, transform 0.05s;
+}
+
+.litmus-test.visible {
+opacity: 1;
+transform: translateY(0);
+}
+.highlight {
+position: relative;
+display: inline-block;
+}
+.highlight::after {
+content: '';
+position: absolute;
+left: 0;
+bottom: -5px;
+width: 100%;
+height: 2px;
+background-color: var(--text-color);
+transform: scaleX(0);
+transition: transform 0.5s ease-out;
+}
+.highlight.visible::after {
+transform: scaleX(1);
+}
+.values-title {
+font-size: 8vw;
+text-align: center;
+margin-bottom: 50px;
+opacity: 0;
+transform: translateY(50px);
+transition: opacity 1s, transform 1s;
+}
+.values-container {
+position: relative;
+}
+.value-item {
+display: flex;
+align-items: center;
+margin-bottom: 100px;
+opacity: 0;
+transform: translateY(50px);
+transition: opacity 1s, transform 1s;
+position: relative;
+}
+.value-item:nth-child(even) {
+flex-direction: row-reverse;
+text-align: right;
+}
+.value-content {
+max-width: 60%;
+position: relative;
+z-index: 2;
+}
+.value {
+font-size: 6vw;
+margin-bottom: 20px;
+}
+.value-description {
+font-size: 2.5vw;
+}
+.value-bg {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 15vw;
+opacity: 0.1;
+z-index: 1;
+white-space: nowrap;
+}
+.contact-form {
+max-width: 600px;
+margin: 0 auto;
+opacity: 0;
+transform: translateY(50px);
+transition: opacity 1s, transform 1s;
+}
+.contact-form input,
+.contact-form textarea {
+width: 100%;
+padding: 15px;
+margin-bottom: 20px;
+background-color: rgba(255, 255, 255, 0.05);
+border: none;
+border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+color: var(--text-color);
+font-family: 'Playfair Display', serif;
+font-style: italic;
+transition: border-color 0.3s, background-color 0.3s;
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+outline: none;
+border-bottom-color: var(--text-color);
+background-color: rgba(255, 255, 255, 0.1);
+}
+.contact-form button {
+background-color: transparent;
+color: var(--text-color);
+border: 1px solid var(--text-color);
+padding: 15px 30px;
+font-family: 'Montserrat', sans-serif;
+font-weight: 300;
+letter-spacing: 2px;
+cursor: pointer;
+transition: background-color 0.3s, color 0.3s;
+}
+.contact-form button:hover {
+background-color: var(--text-color);
+color: var(--bg-color);
+}
+.visible {
+opacity: 1;
+transform: translateY(0);
+}
+.thank-you-message {
+display: none;
+text-align: center;
+font-size: 2vw;
+margin-top: 20px;
+}
+</style>
+</head>
+<body>
+<header class="header">
+<div>elevated event staffing in nyc // bartending | staffing | photography | all-inclusive event production</div>
+</header>
+
+<div class="section logo-section">
+<div class="logo">
+<span class="logo-underage">underage</span><br>
+<span class="logo-overserved">& overserved</span>
+</div>
+<div class="logo-underline"></div>
+<p class="quote">"those who dance are considered insane by those who cannot hear the music." —britney spears</p>
+</div>
+
+<div class="section litmus-test-section">
+<p class="litmus-test" id="litmus1">at underage & overserved, we like to think that how a person reacts to the words <span class="highlight">"underage & overserved"</span> serves as an effective litmus test for whether or not someone is fun at parties...:) </p>
+</div>
+
+<div class="section values-section">
+<h2 class="values-title">our values</h2>
+<div class="values-container">
+<div class="value-item">
+<div class="value-content">
+<h3 class="value">love thy neighbor, not thy in-group</h3>
+<p class="value-description">extending compassion beyond our immediate circles.</p>
+</div>
+<div class="value-bg">love</div>
+</div>
+<div class="value-item">
+<div class="value-content">
+<h3 class="value">warm and open</h3>
+<p class="value-description">we assume trust and openness. we value earnestness and reject cynicism.</p>
+</div>
+<div class="value-bg">open</div>
+</div>
+<div class="value-item">
+<div class="value-content">
+<h3 class="value">bold & non-judgmental</h3>
+<p class="value-description">we value risk-taking and avoid group-think.</p>
+</div>
+<div class="value-bg">bold</div>
+</div>
+<div class="value-item">
+<div class="value-content">
+<h3 class="value">elevated yet approachable</h3>
+<p class="value-description">sophisticated service with a friendly, down-to-earth attitude. </p>
+</div>
+<div class="value-bg">elevated</div>
+</div>
+<div class="value-item">
+<div class="value-content">
+<h3 class="value">polished yet playful</h3>
+<p class="value-description">delivering excellence with a dash of fun and spontaneity. we keep things professional but we also keep things light. if things go off plan, we’ll deal with it with a smile and sense of humor. </p>
+</div>
+<div class="value-bg">playful</div>
+</div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="values-title">contact us</h2>
+<form class="contact-form" id="contactForm">
+<input type="text" placeholder="name" id="name" required>
+<input type="email" placeholder="email" id="email" required>
+<textarea placeholder="event details (date, location, guest count, services needed)" rows="5" id="eventDetails" required></textarea>
+<input type="text" placeholder="how did you hear about us?" id="referral" required>
+<button type="button" onclick="sendEmail()">send inquiry</button>
+</form>
+<div class="thank-you-message" id="thankYouMessage">
+message received :) we'll get back to you asap. in the meantime, try not to have too much fun without us.
+</div>
+</div>
+
+<script>
+function sendEmail() {
+var name = document.getElementById('name').value;
+var email = document.getElementById('email').value;
+var eventDetails = document.getElementById('eventDetails').value;
+var referral = document.getElementById('referral').value;
+
+var subject = 'Event Inquiry';
+var body = 'Name: ' + name + '%0D%0A' +
+'Email: ' + email + '%0D%0A' +
+'Event Details: ' + eventDetails + '%0D%0A' +
+'How Heard: ' + referral;
+
+var mailtoLink = 'mailto:info@underageandoverserved.com' +
+'?subject=' + encodeURIComponent(subject) +
+'&body=' + encodeURIComponent(body);
+
+window.location.href = mailtoLink;
+}
+</script>
+
+<footer class="footer">
+<p>inquiries: 💌 info@underageandoverserved.com</p>
+</footer>
+
+<script>
+function sendEmail() {
+var name = document.getElementById('name').value;
+var email = document.getElementById('email').value;
+var eventDetails = document.getElementById('eventDetails').value;
+var referral = document.getElementById('referral').value;
+
+var subject = 'Event Inquiry';
+var body = 'Name: ' + name + '%0D%0A' +
+'Email: ' + email + '%0D%0A' +
+'Event Details: ' + eventDetails + '%0D%0A' +
+'How Heard: ' + referral;
+
+var mailtoLink = 'mailto:info@underageandoverserved.com' +
+'?subject=' + encodeURIComponent(subject) +
+'&body=' + encodeURIComponent(body);
+
+window.location.href = mailtoLink;
+}
+
+const header = document.querySelector('.header');
+const footer = document.querySelector('.footer');
+const sections = document.querySelectorAll('.section');
+const logoUnderline = document.querySelector('.logo-underline');
+const valueItems = document.querySelectorAll('.value-item');
+const valuesTitle = document.querySelector('.values-title');
+const litmusTest = document.querySelector('.litmus-test');
+const highlight = document.querySelector('.highlight');
+
+const observer = new IntersectionObserver((entries, observer) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+entry.target.querySelectorAll('.logo, .quote, .contact-form, .values-title, .highlight').forEach(el => {
+el.classList.add('visible');
+});
+if (entry.target.classList.contains('logo-section')) {
+logoUnderline.classList.add('visible');
+}
+if (entry.target.classList.contains('litmus-test-section')) {
+animateLitmusTest(entry.target.querySelector('.litmus-test'));
+}
+}
+});
+}, { threshold: 0.1 });
+
+function animateLitmusTest(litmusTest) {
+const text = litmusTest.textContent;
+litmusTest.innerHTML = '';
+
+text.split(' ').forEach((word, index) => {
+const wordSpan = document.createElement('span');
+wordSpan.textContent = word;
+wordSpan.style.opacity = '0';
+wordSpan.style.transform = 'translateY(20px)';
+wordSpan.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+wordSpan.style.transitionDelay = `${index * 50}ms`;
+wordSpan.style.display = 'inline-block';
+wordSpan.style.marginRight = '0.25em'; // Add space between words
+litmusTest.appendChild(wordSpan);
+
+// Add a space after each word (except the last one)
+if (index < text.split(' ').length - 1) {
+litmusTest.appendChild(document.createTextNode(' '));
+}
+
+// Force reflow to ensure the initial state is applied before transitioning
+wordSpan.offsetHeight;
+
+requestAnimationFrame(() => {
+wordSpan.style.opacity = '1';
+wordSpan.style.transform = 'translateY(0)';
+});
+});
+}
+
+sections.forEach(section => {
+observer.observe(section);
+});
+
+setTimeout(() => {
+header.classList.add('visible');
+footer.classList.add('visible');
+}, 1000);
+
+// Fade in and out for values
+window.addEventListener('scroll', () => {
+valueItems.forEach((item, index) => {
+let rect = item.getBoundingClientRect();
+let itemMiddle = rect.top + rect.height / 2;
+let screenMiddle = window.innerHeight / 2;
+let distance = Math.abs(itemMiddle - screenMiddle);
+
+let opacity = 1 - (distance / (window.innerHeight / 2));
+opacity = Math.max(0, Math.min(1, opacity));
+
+item.style.opacity = opacity;
+
+if (opacity > 0.7) {
+item.classList.add('visible');
+} else {
+item.classList.remove('visible');
+}
+});
+}, false);
+
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+e.preventDefault();
+// Here you would typically send the form data to your server
+// For this example, we'll just show the thank you message
+this.style.display = 'none';
+document.getElementById('thankYouMessage').style.display = 'block';
+});
+</script>
+</body>
+</html>
