@@ -1421,6 +1421,12 @@ document.addEventListener('click', (event) => {
 
 // Initialize the first slide
 showSlide(0);
+
+  document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelector('.logo-underline').classList.add('visible');
+  }, 500);
+});
 </script>
 </body>
 </html>
