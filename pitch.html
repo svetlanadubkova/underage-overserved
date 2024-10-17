@@ -20,7 +20,6 @@ body, html {
   color: var(--text-color);
   font-family: 'Playfair Display', serif;
   font-style: italic;
-  overflow: hidden;
   text-transform: lowercase;
 }
 
@@ -28,69 +27,61 @@ body, html {
   height: 100vh;
   width: 100vw;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px;
+  box-sizing: border-box;
+}
+
+.logo-section, .qr-section {
+  width: 45%;
+  display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 50px 10%;
-  box-sizing: border-box;
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
+  align-items: flex-start;
 }
-.slide.active {
-  opacity: 1;
-}
+
 .logo {
   font-size: 5vw;
   line-height: 0.9;
   margin-bottom: 20px;
   text-align: left;
 }
+
 .logo-underage {
   font-family: 'Playfair Display', serif;
   font-style: italic;
   font-weight: 400;
 }
+
 .logo-overserved {
   font-family: 'Montserrat', sans-serif;
   font-weight: 300;
   letter-spacing: 2px;
 }
-.main-text {
-  font-size: 3.5vw;
-  font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 20px;
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-}
+
 .sub-text {
   font-size: 1.8vw;
   font-weight: 400;
   font-family: 'Playfair Display', serif;
   font-style: italic;
 }
-.highlight {
-  color: var(--accent-color);
-}
-.content {
-  opacity: 0;
-  transform: translateY(50px);
-  transition: opacity 1s, transform 1s;
-}
-.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+
 .logo-underline {
   width: 0;
   height: 3px;
   background-color: var(--text-color);
   transition: width 1.5s ease-out;
 }
+
 .logo-underline.visible {
   width: 100%;
+}
+
+.qr-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
 }
 .chart-container {
   width: 100%;
@@ -360,19 +351,27 @@ ul.sub-text {
 
 @media (max-width: 768px) {
   .slide {
-    padding: 20px 5%;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .logo-section, .qr-section {
+    width: 100%;
+    align-items: center;
   }
 
   .logo {
     font-size: 8vw;
-  }
-
-  .main-text {
-    font-size: 6vw;
+    text-align: center;
   }
 
   .sub-text {
     font-size: 4vw;
+    text-align: center;
+  }
+
+  .qr-image {
+    max-width: 200px;
   }
 
   .split-content {
