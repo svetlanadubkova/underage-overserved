@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>underage & overserved - powerup pitch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --dark-bg: #1a1a1a;
+            --light-bg: #f5f5f5;
+            --dark-text: #1a1a1a;
+            --light-text: #ffffff;
+            --accent-color: #e6a64c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            text-transform: lowercase;
+        }
+        
+        body, html {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-color: var(--dark-bg);
+        }
+        
+        .section-wrapper {
+            position: relative;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .section-content {
+            position: relative;
+            z-index: 2;
+            padding: 10vh 5vw;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .section-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            transition: transform 0.5s ease;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        
+        h1 { font-size: clamp(3rem, 10vw, 8rem); line-height: 1; }
+        h2 { font-size: clamp(2.5rem, 8vw, 6rem); line-height: 1.1; }
+        
+        p { 
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            margin-bottom: 1rem; 
+        }
+        
+        .logo {
+            font-size: clamp(3rem, 10vw, 8rem);
+            line-height: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .logo-underage {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 400;
+        }
+        
+        .logo-overserved {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        
+        .highlight { 
+            color: var(--accent-color);
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+        
+        img:hover {
+            transform: scale(1.05);
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent-color);
+            transform: translateX(-101%);
+            transition: transform 0.3s ease;
+        }
+        
+        a:hover::after {
+            transform: translateX(0);
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: clamp(2rem, 4vw, 4rem);
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .stat-text {
+            font-size: clamp(1rem, 1.5vw, 1.5rem);
+            margin-top: 1rem;
+        }
+        
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.2s ease;
+        }
+        
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.15;
+            background: linear-gradient(45deg, #1a1a1a, #2a2a2a, #3a3a3a, #2a2a2a, #1a1a1a);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Adjust this for each section to create a layered effect */
+        .section-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            filter: brightness(0.9) saturate(1.2);
+            z-index: -1;
+            transition: all 0.5s ease;
+        }
+
+        .section-wrapper:nth-child(odd)::before {
+            filter: brightness(1.1) saturate(0.8);
+        }
+
+        /* Adjust the section background colors */
+        .section-wrapper[data-bg="dark"] {
+            background-color: rgba(26, 26, 26, 0.7);
+        }
+
+        .section-wrapper[data-bg="light"] {
+            background-color: rgba(245, 245, 245, 0.7);
+        }
+        
+        .subtle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient-bg"></div>
+    <div id="cursor"></div>
+
+    <div class="section-wrapper" data-bg="dark">
+        <div class="section-bg"></div>
+        <div class="section-content" style="text-align: left;">
+            <div class="logo">
+                <span class="logo-underage">underage</span><br>
+                <span class="logo-overserved">& overserved</span>
+            </div>
+            <p class="tagline">"those who dance are considered insane by those who cannot hear the music."</p>
+        </div>
+    </div>
+
+    <div class="section-wrapper" data-bg="light">
+        <div class="section-bg"></div>
+        <div class="section-content" style="text-align: right;">
+            <h2>hear our story</h2>
+            <p>dive deeper into the underage & overserved experience</p>
+            <a href="#" class="link">listen to our podcast</a>
+        </div>
+    </div>
+
+    <div class="section-wrapper" data-bg="dark">
+        <div class="section-bg"></div>
+        <div class="section-content" style="text-align: left;">
+            <h2>redefining <span class="highlight">experiences</span></h2>
+            <p>within 10 years, the top brands won't be known for their products—they'll be remembered for the experiences they create. at underage & overserved, we're creating that future today.</p>
+            <img src="https://i.imgur.com/kN56Hyc.png" alt="underage & overserved dream team">
+            <p class="highlight">100% women-owned and operated</p>
+        </div>
+    </div>
+
+    <div class="section-wrapper" data-bg="light">
+        <div class="section-bg"></div>
+        <div class="section-content" style="text-align: right;">
+            <h2>the numbers speak</h2>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">$77B</div>
+                    <div class="stat-text">nyc event market by 2030</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">16.7%</div>
+                    <div class="stat-text">annual growth rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">80%</div>
+                    <div class="stat-text">recognize event-led growth</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">300+</div>
+                    <div class="stat-text">five-star reviews</div>
+                </div>
+            </div>
+            <p>here's the numbers behind the party. the corporate events market in nyc is booming, and it's begging for a shake-up. see the full breakdown here: <a href="https://www.alliedmarketresearch.com/press-release/us-corporate-event-market.html" target="_blank" class="link">nyc market link</a></p>
+        </div>
+    </div>
+
+    <div class="section-wrapper" data-bg="dark">
+        <div class="section-bg"></div>
+        <div class="section-content" style="text-align: left;">
+            <h2>immerse yourself</h2>
+            <p>step into our world with our custom AR filter</p>
+            <a href="https://www.instagram.com/ar/1081124230025755/?ch=MTljY2YxYzgxYzZmNTllOWFmMTM5ODZmNDJjZDAzMWU%3D" target="_blank" class="link">try our instagram ar filter</a>
+        </div>
+    </div>
+
+    <div class="section-wrapper" data-bg="light">
+        <div class="section-bg"></div>
+        <div class="section-content" style="text-align: right;">
+            <h2>our commitment to excellence</h2>
+            <p>we take training seriously. check out an example of our employee assignment guide:</p>
+            <a href="https://svetlanadubkova.github.io/jadeuandoteamassignment" target="_blank" class="link">view sample employee guide</a>
+        </div>
+    </div>
+
+    <div class="section-wrapper" data-bg="dark">
+        <div class="section-bg"></div>
+        <div class="section-content" style="text-align: left;">
+            <h2>the ask</h2>
+            <p>$20k to revolutionize event hospitality. let's turn every gathering into an unforgettable experience.</p>
+        </div>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Set up alternating backgrounds
+        gsap.utils.toArray('.section-wrapper').forEach((section, index) => {
+            const bg = section.querySelector('.section-bg');
+            const content = section.querySelector('.section-content');
+            const isLight = section.dataset.bg === 'light';
+            
+            gsap.set(bg, {
+                backgroundColor: isLight ? '#f5f5f5' : '#1a1a1a'
+            });
+            
+            gsap.set(content, {
+                color: isLight ? '#1a1a1a' : '#ffffff'
+            });
+
+            // Parallax effect
+            gsap.to(bg, {
+                yPercent: 30,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true
+                }
+            });
+
+            // Content animation
+            gsap.from(content.children, {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.2,
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    end: "top 20%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+
+        // Animate stat numbers
+        gsap.utils.toArray(".stat-number").forEach(stat => {
+            let num = parseFloat(stat.textContent.replace(/[^0-9.-]+/g,""));
+            gsap.from(stat, {
+                textContent: 0,
+                duration: 2,
+                ease: "power1.inOut",
+                snap: { textContent: 1 },
+                stagger: 1,
+                scrollTrigger: {
+                    trigger: stat,
+                    start: "top 80%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+
+        // Custom cursor
+        const cursor = document.getElementById('cursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.2,
+                ease: "power2.out"
+            });
+        });
+
+        document.querySelectorAll('a, img').forEach(el => {
+            el.addEventListener('mouseenter', () => gsap.to(cursor, {scale: 2, duration: 0.2}));
+            el.addEventListener('mouseleave', () => gsap.to(cursor, {scale: 1, duration: 0.2}));
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                gsap.to(window, {duration: 1, scrollTo: targetId, ease: "power2.inOut"});
+            });
+        });
+
+        // Text scramble effect
+        class TextScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                this.update = this.update.bind(this);
+            }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span class="dud">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        // Apply text scramble effect to headings
+        document.querySelectorAll('h2').forEach(heading => {
+            const fx = new TextScramble(heading);
+            fx.setText(heading.textContent);
+
+            ScrollTrigger.create({
+                trigger: heading,
+                start: "top 80%",
+                onEnter: () => fx.setText(heading.textContent),
+                onEnterBack: () => fx.setText(heading.textContent)
+            });
+        });
+
+        // Subtle background animation
+       window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelector('.gradient-bg').style.transform = `translateY(${scrolled * 0.5}px)`;
+        });
+
+        // Enhance section transitions
+        gsap.utils.toArray('.section-wrapper').forEach((section, index) => {
+            gsap.to(section, {
+                backgroundPosition: `50% ${-50 + index * 10}%`,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true
+                }
+            });
+        });
+        // Interactive image effect
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('mousemove', (e) => {
+                const { left, top, width, height } = img.getBoundingClientRect();
+                const x = (e.clientX - left) / width;
+                const y = (e.clientY - top) / height;
+                
+                gsap.to(img, {
+                    duration: 0.5,
+                    rotationY: (x - 0.5) * 20,
+                    rotationX: (y - 0.5) * -20,
+                    ease: "power2.out"
+                });
+            });
+
+            img.addEventListener('mouseleave', () => {
+                gsap.to(img, {
+                    duration: 0.5,
+                    rotationY: 0,
+                    rotationX: 0,
+                    ease: "power2.out"
+                });
+            });
+        });
+
+        // Magnetic effect for links
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('mousemove', (e) => {
+                const { left, top, width, height } = link.getBoundingClientRect();
+                const x = (e.clientX - left) / width - 0.5;
+                const y = (e.clientY - top) / height - 0.5;
+                
+                gsap.to(link, {
+                    duration: 0.3,
+                    x: x * 20,
+                    y: y * 20,
+                    ease: "power2.out"
+                });
+            });
+
+            link.addEventListener('mouseleave', () => {
+                gsap.to(link, {
+                    duration: 0.3,
+                    x: 0,
+                    y: 0,
+                    ease: "power2.out"
+                });
+            });
+        });
+    </script>
+</body>
+</html>
