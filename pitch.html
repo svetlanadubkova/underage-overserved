@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>underage & overserved - polished yet playful hospitality</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+:root {
+  --bg-color: #1a1a1a;
+  --text-color: #ffffff;
+  --accent-color: #e6a64c;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  overflow: hidden;
+  text-transform: lowercase;
+}
+
+.slide {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 50px 10%;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+.slide.active {
+  opacity: 1;
+}
+.logo {
+  font-size: 5vw;
+  line-height: 0.9;
+  margin-bottom: 20px;
+  text-align: left;
+}
+.logo-underage {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 400;
+}
+.logo-overserved {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+.main-text {
+  font-size: 3.5vw;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
+.sub-text {
+  font-size: 1.8vw;
+  font-weight: 400;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
+.highlight {
+  color: var(--accent-color);
+}
+.content {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1s, transform 1s;
+}
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.logo-underline {
+  width: 0;
+  height: 3px;
+  background-color: var(--text-color);
+  transition: width 1.5s ease-out;
+}
+.logo-underline.visible {
+  width: 100%;
+}
+.chart-container {
+  width: 100%;
+  height: 40vh;
+  margin-top: 20px;
+}
+.image-placeholder {
+  width: 100%;
+  height: 50vh;
+  background-color: rgba(230, 166, 76, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-size: 1.5vw;
+  margin: 10px 0;
+}
+.creatives-on-fire {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4vw;
+  line-height: 1.6;
+  text-align: right;
+  padding: 20px;
+  background-color: transparent;
+  color: var(--text-color);
+}
+
+.split-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.split-content > div {
+  width: 48%;
+  margin-bottom: 20px;
+}
+.source-citation {
+  font-size: 0.8vw;
+  font-style: normal;
+  font-family: 'Montserrat', sans-serif;
+  text-align: right;
+  margin-top: 10px;
+  color: var(--text-color);
+}
+
+.source-citation a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.source-citation a:hover {
+  text-decoration: underline;
+}
+
+.milestone {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.milestone-date {
+  font-size: 1.5vw;
+  font-weight: bold;
+  margin-right: 20px;
+  color: var(--accent-color);
+  width: 30%;
+}
+.milestone-content {
+  font-size: 1.2vw;
+  width: 70%;
+}
+.small-text {
+  font-size: 0.8vw;
+  font-style: normal;
+  font-family: 'Montserrat', sans-serif;
+}
+ul.sub-text {
+  font-size: 1.5vw;
+  padding-left: 20px;
+}
+.case-study-gif {
+  width: 48%;
+  max-height: 50vh;
+  object-fit: contain;
+  margin-bottom: 20px;
+}
+.case-study-chart {
+  width: 48%;
+  height: 50vh;
+}
+.case-study-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.team-photo {
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  margin-top: 20px;
+}
+.mind-map {
+  width: 90%;
+  height: 80vh;
+  position: relative;
+  overflow: visible;
+}
+.mind-map-node {
+  position: absolute;
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; /* Slightly reduced font size */
+  color: var(--text-color);
+  text-align: center;
+  white-space: pre-line;
+  background-color: rgba(26, 26, 26, 0.7);
+  padding: 8px 12px; /* Increased padding */
+  border-radius: 15px;
+  transform: translate(-50%, -50%);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 150px; /* Limit the width of nodes */
+  word-wrap: break-word; /* Allow long words to break */
+}
+
+.mind-map-node:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(230, 166, 76, 0.5);
+  z-index: 10;
+}
+@keyframes pulse {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.mind-map-line {
+  position: absolute;
+  background-color: var(--text-color);
+  height: 1px;
+  transform-origin: left center;
+  animation: pulse 2s infinite;
+}
+
+.infographic {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.infographic-column {
+  width: 48%;
+}
+
+.infographic-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.infographic-percentage {
+  font-size: 2vw;
+  font-weight: bold;
+  margin-right: 10px;
+  color: var(--accent-color);
+}
+
+.infographic-text {
+  font-size: 1.5vw;
+}
+
+.infographic-title {
+  font-size: 2.5vw;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: var(--text-color);
+}
+
+/* New styles for the target customer mind map */
+.target-customer-mind-map {
+  width: 100%;
+  height: 80vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.target-customer-node text {
+  font-size: 28px;
+  fill: #e6a64c;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  font-style: italic;
+}
+
+.target-customer-link {
+  fill: none;
+  stroke: #e6a64c;
+  stroke-width: 1.5px;
+  opacity: 0.4;
+  animation: pulse 2s infinite;
+}
+
+.pain-points {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 300px;
+  background-color: rgba(26, 26, 26, 0.8);
+  border: 1px solid #e6a64c;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.pain-points h3 {
+  color: #ffffff;
+  font-size: 22px;
+  margin-top: 0;
+}
+
+.pain-points p {
+  font-size: 18px;
+  margin: 10px 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.solution {
+  color: #ffffff;
+}
+
+/* New styles for the PowerUp Award breakdown slide */
+.powerup-award {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.powerup-item {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.powerup-amount {
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+.strategic-note {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: rgba(230, 166, 76, 0.1);
+  border-left: 4px solid var(--accent-color);
+  font-style: italic;
+  font-size: 38px;
+}
+
+@media (max-width: 768px) {
+  .slide {
+    padding: 20px 5%;
+  }
+
+  .logo {
+    font-size: 8vw;
+  }
+
+  .main-text {
+    font-size: 6vw;
+  }
+
+  .sub-text {
+    font-size: 4vw;
+  }
+
+  .split-content {
+    flex-direction: column;
+  }
+
+  .split-content > div {
+    width: 100%;
+  }
+
+  .image-placeholder {
+    height: 30vh;
+    font-size: 3vw;
+  }
+
+  .infographic-title {
+    font-size: 5vw;
+  }
+
+  .infographic-percentage {
+    font-size: 4vw;
+  }
+
+  .infographic-text {
+    font-size: 3.5vw;
+  }
+
+  .milestone-date {
+    font-size: 3.5vw;
+  }
+
+  .milestone-content {
+    font-size: 3vw;
+  }
+
+  .creatives-on-fire {
+    font-size: 3.5vw;
+    text-align: left;
+  }
+
+  .chart-container {
+    height: 30vh;
+  }
+
+  .team-photo {
+    max-height: 40vh;
+  }
+
+  .mind-map {
+    height: 60vh;
+  }
+
+  .mind-map-node {
+    font-size: 2.5vw;
+  }
+
+  .target-customer-node text {
+    font-size: 3vw;
+  }
+
+  .pain-points {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .pain-points h3 {
+    font-size: 4vw;
+  }
+
+  .pain-points p {
+    font-size: 3vw;
+  }
+
+  .powerup-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .powerup-amount {
+    margin-top: 5px;
+  }
+
+  .strategic-note {
+    font-size: 3.5vw;
+  }
+}
+
+.award-utilization {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.main-text {
+  font-size: 3.5vw;
+  margin-bottom: 20px;
+}
+
+.award-content {
+  display: flex;
+  flex: 1;
+}
+
+.powerup-award {
+  flex: 0 0 60%;
+  font-size: 2vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.powerup-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.powerup-amount {
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+.image-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  margin-left: 20px;
+}
+
+.grid-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.float-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.photo-booth {
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
+}
+
+.strategic-note {
+  font-size: 1.8vw;
+  background-color: rgba(230, 166, 76, 0.1);
+  padding: 15px;
+  border-left: 4px solid var(--accent-color);
+  margin-top: 20px;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@media (max-width: 768px) {
+  .main-text {
+    font-size: 6vw;
+  }
+
+  .powerup-award {
+    font-size: 3vw;
+    flex: 0 0 100%;
+  }
+
+  .award-content {
+    flex-direction: column;
+  }
+
+  .image-grid {
+    margin-left: 0;
+    margin-top: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  .photo-booth {
+    grid-column: 1 / 3;
+    grid-row: 1 / 2;
+  }
+
+  .strategic-note {
+    font-size: 3vw;
+  }
+
+@media (max-width: 768px) {
+  .logo {
+    font-size: 10vw;
+  }
+
+  .main-text {
+    font-size: 7vw;
+  }
+
+  .sub-text {
+    font-size: 5vw;
+  }
+
+  .infographic-title {
+    font-size: 6vw;
+  }
+
+  .infographic-percentage {
+    font-size: 5vw;
+  }
+
+  .infographic-text {
+    font-size: 4.5vw;
+  }
+
+  .milestone-date {
+    font-size: 4.5vw;
+  }
+
+  .milestone-content {
+    font-size: 4vw;
+  }
+
+  .creatives-on-fire {
+    font-size: 4.5vw;
+  }
+
+  .mind-map-node {
+    font-size: 3vw;
+  }
+
+  .target-customer-node text {
+    font-size: 3.5vw;
+  }
+
+  .pain-points h3 {
+    font-size: 5vw;
+  }
+
+  .pain-points p {
+    font-size: 4vw;
+  }
+
+  .strategic-note {
+    font-size: 4vw;
+  }
+}
+</style>
+</head>
+<body>
+  <div class="slide">
+  <div class="content">
+    <p class="main-text">hello <span style="color: var(--accent-color);">powerup judges</span>!</p>
+    <p class="sub-text">please scan this qr code:</p>
+    <div class="split-content">
+      <div><img src="https://imgur.com/Qdk2m85" alt="QR code" class="image-placeholder"></div>
+
+    </div>
+  </div>
+</div>
+
+<div class="slide active">
+  <div class="content">
+    <div class="logo">
+      <span class="logo-underage">underage</span><br>
+      <span class="logo-overserved">& overserved</span>
+    </div>
+    <div class="logo-underline"></div>
+    <p class="sub-text">polished yet playful hospitality</p>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">"within 10 years, the top brands won't be defined by their products, but by the <span class="highlight">experiences</span> they create."</p>
+    <p class="sub-text">consumers crave meaning and connection, not just products.</p>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">every year, brands waste <span class="highlight">billions</span> on boring, forgettable events.</p>
+    <p class="sub-text">we make sure your event investment creates lasting, unforgettable experiences. thoughtful, playful, elevated.</p>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <div class="infographic">
+      <div class="infographic-column">
+        <h3 class="infographic-title">Prospect-Targeted Events</h3>
+        <div class="infographic-item">
+          <span class="infographic-percentage">54%</span>
+          <span class="infographic-text">community or networking events</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">46%</span>
+          <span class="infographic-text">brand pop-up events</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">43%</span>
+          <span class="infographic-text">conferences or trade shows</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">39%</span>
+          <span class="infographic-text">product launches</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">37%</span>
+          <span class="infographic-text">private or VIP events</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">32%</span>
+          <span class="infographic-text">webinars</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">27%</span>
+          <span class="infographic-text">virtual experiences</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">25%</span>
+          <span class="infographic-text">sales-led or local field events</span>
+        </div>
+      </div>
+      <div class="infographic-column">
+        <h3 class="infographic-title">Customer-Targeted Events</h3>
+        <div class="infographic-item">
+          <span class="infographic-percentage">45%</span>
+          <span class="infographic-text">sales-led or local field events</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">44%</span>
+          <span class="infographic-text">brand pop-up events</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">39%</span>
+          <span class="infographic-text">product launches</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">34%</span>
+          <span class="infographic-text">conferences or trade shows</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">31%</span>
+          <span class="infographic-text">private or VIP events</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">29%</span>
+          <span class="infographic-text">sales-led or local field events</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">27%</span>
+          <span class="infographic-text">webinars</span>
+        </div>
+        <div class="infographic-item">
+          <span class="infographic-percentage">25%</span>
+          <span class="infographic-text">virtual experiences</span>
+        </div>
+      </div>
+    </div>
+    <p class="source-citation">Source: <a href="https://splashthat.com/resources/2024-outlook" target="_blank">SplashThat 2024 Outlook</a></p>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">the event industry is ripe for disruption.</p>
+    <p class="sub-text"><span class="highlight">52%</span> of business leaders believe events drive the most ROI</p>
+    <p class="sub-text"><span class="highlight">70%</span> are increasing their event budgets</p>
+    <p class="sub-text"><span class="highlight">80%</span> recognize the power of event-led growth</p>
+    <p class="sub-text">The New York corporate event market is projected to grow from the most prominent U.S. market in 2020 to <span class="highlight">$77.1 billion</span> by 2030, with a compound annual growth rate (CAGR) of 16.7%.</p>
+    <div class="chart-container">
+      <canvas id="nyMarketGrowthChart"></canvas>
+    </div>
+    <p class="small-text">Source: Allied Market Research</p>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">i'm lana and i have <span class="highlight">300+</span> five-star reviews</p>
+    <p class="sub-text">consistently ranked #1 on staffing platforms like Taskrabbit.</p>
+    <div class="split-content">
+      <div><img src="https://i.imgur.com/MfEW1mR.png" alt="review profile" class="image-placeholder"></div>
+      <div><img src="https://i.imgur.com/ziZd40E.png" alt="customer review" class="image-placeholder"></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">women-owned, immigrant-owned.</p>
+    <p class="sub-text">our team is owned and operated by proud native new yorkers.</p>
+    <img src="https://i.imgur.com/kN56Hyc.png" alt="Team Photo" class="team-photo">
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">our services</p>
+    <p class="sub-text">underage & overserved is a full-service event business offering:</p>
+    <ul class="sub-text">
+      <li>Event planning and production</li>
+      <li>Staffing services</li>
+      <li>Event photography</li>
+      <li>Themed events</li>
+      <li>Floral arrangements</li>
+      <li>Catering coordination</li>
+      <li>Bespoke event consulting</li>
+    </ul>
+    <p class="sub-text" style="font-size: 2.5em; color: #e6a64;">We're growing into a comprehensive event production company, leveraging our expertise in staffing, photography, and coordination to deliver unforgettable experiences.</p>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <div class="mind-map" id="strategy-map"></div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">target market: <span style="color: var(--accent-color);">marketers</span> & <span style="color: var(--accent-color);">founders</span>.<br><br> gen z, web3, venture-backed startups, and forward-thinking brands.</p>
+    <p class="sub-text">we're at the intersection of the future and fun.</p>
+    <div class="chart-container">
+      <canvas id="marketersBeliefChart"></canvas>
+    </div>
+    <p class="source-citation">source: splash that 2024 outlook</p>
+  </div>
+</div>
+
+<!-- New Target Customer Mind Map slide -->
+<div class="slide">
+  <div class="content">
+    <p class="main-text">target customer mind map</p>
+    <svg id="target-customer-mind-map" class="target-customer-mind-map"></svg>
+    <div class="pain-points">
+      <h3>pain points & solutions</h3>
+    </div>
+  </div>
+</div>
+
+<!-- New PowerUp Award breakdown slide -->
+<div class="slide">
+  <div class="content award-utilization">
+    <h2 class="main-text">utilization of $20,000 powerup award</h2>
+    <div class="award-content">
+      <div class="powerup-award">
+        <div class="powerup-item">
+          <span>photography & event equipment:</span>
+          <span class="powerup-amount">$11,000</span>
+        </div>
+        <div class="powerup-item">
+          <span>insurance fees (one-time):</span>
+          <span class="powerup-amount">$1,200</span>
+        </div>
+        <div class="powerup-item">
+          <span>licenses and permit fees:</span>
+          <span class="powerup-amount">$1,000</span>
+        </div>
+        <div class="powerup-item">
+          <span>beginning merch inventory:</span>
+          <span class="powerup-amount">$1,500</span>
+        </div>
+        <div class="powerup-item">
+          <span>advertising (bark, the bash, taskrabbit, google ads):</span>
+          <span class="powerup-amount">$1,500</span>
+        </div>
+        <div class="powerup-item">
+          <span>professional fees (contractor, lawyer, etc.):</span>
+          <span class="powerup-amount">$1,500</span>
+        </div>
+        <div class="powerup-item">
+          <span>unanticipated costs (10% of total):</span>
+          <span class="powerup-amount">$2,300</span>
+        </div>
+      </div>
+      <div class="image-grid">
+        <div class="grid-item"><img src="https://i.imgur.com/mDFWiJ2.gif" alt="360 Photo Booth" class="float-image photo-booth"></div>
+        <div class="grid-item"><img src="https://i.imgur.com/lCOrCSZ.png" alt="Camera" class="float-image camera"></div>
+        <div class="grid-item"><img src="https://i.imgur.com/VuD3h2y.png" alt="TaskRabbit Logo" class="float-image taskrabbit"></div>
+        <div class="grid-item"><img src="https://i.imgur.com/weA6WkU.png" alt="The Bash Logo" class="float-image bash"></div>
+        <div class="grid-item"><img src="https://i.imgur.com/zPlreL4.png" alt="Bark Logo" class="float-image bark"></div>
+      </div>
+    </div>
+    <div class="strategic-note">
+      <p>Photography is not just a service of ours; it's a strategic marketing expense. I will synergistically leverage my photography business to attract clients for underage & overserved.</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">creating <span style="color: var(--accent-color);">"fourth spaces"</span></p>
+    <p class="sub-text">inspired by Patricia Mou's concept and Robert D. Putnam's research on social capital, civic engagement, and community cohesion.</p>
+    <div class="split-content">
+      <div><img src="https://i.imgur.com/sPtKf9d.jpeg" alt="Fourth Space Concept Illustration" class="image-placeholder"></div>
+      <div><img src="https://i.imgur.com/GgRHml1.jpeg" alt="Join or Die Documentary Screenshot" class="image-placeholder"></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">creatives on fire</p>
+    <p class="sub-text">empowering underrepresented creatives through resources, education, and collaboration</p>
+    <div class="split-content">
+      <div><img src="https://i.imgur.com/J3wmHWH.jpeg" alt="Creatives on Fire Event Photo 1" class="image-placeholder"></div>
+      <div class="creatives-on-fire">
+        <br><br><b><span style="color: var(--accent-color);">workathons</span>, <span style="color: var(--accent-color);">technology workshops</span>, <span style="color: var(--accent-color);">community get-togethers</span>,</b> and <b><span style="color: var(--accent-color);">informational panels</span></b>—designed to foster collaboration, creativity, and financial independence within the creative community. 
+        <br> <br> hands-on learning, relationship-building, and growth opportunities that directly align with underage & overserved's vision of building meaningful, high-energy experiences.
+      </div>
+    </div>
+    <p class="sub-text">"The best way to find yourself is to lose yourself in the service of others." - Gandhi</p>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">case study</p>
+    <p class="sub-text">underage&overserved teamed up with side quest at fractal tech & increased their average event attendance by <span class="sub-text" style="color: var(--accent-color);">&gt;300%</span> with thoughtful event marketing and playful, bespoke touches.</p>
+
+    <div class="case-study-content">
+      <img src="https://i.imgur.com/eH2S7mW.gif" alt="Side Quest Case Study" class="case-study-gif">
+      <div class="case-study-chart">
+        <canvas id="attendanceChart"></canvas>
+      </div>
+    </div>
+    <p class="sub-text">hospitality isn't just service—it's connection. underage & overserved ensures every penny you spend turns into something memorable.</p>
+  </div>
+</div>
+
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text"> scrappy &</class><class="main-text" style="color: var(--accent-color);"> resourceful.</class>
+    <p class="sub-text">#1 on Google with just $30. coded 10 websites with zero experience. imagine what i'll be able to do with $20k.</p>
+    <div class="split-content">
+      <div><img src="https://i.imgur.com/rgtSiCb.png" alt="Google Search Results Screenshot" class="image-placeholder"></div>
+      <div><img src="https://i.imgur.com/dRioYaC.png" alt="Website Portfolio Collage" class="image-placeholder"></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">our goals</p>
+    <p class="sub-text">We aim to achieve at least <span class="highlight">$40,000</span> in revenue within 12 months, secure <span class="highlight">10</span> unique clients, expand our all-women team by <span class="highlight">5</span> members, and establish <span class="highlight">4</span> key partnerships.</p>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">our milestones</p>
+    <div class="milestone">
+      <div class="milestone-date">milestone reached 1</div>
+      <div class="milestone-content"> finalize core team. find work not just for myself but for my team. </div>
+    </div>
+    <div class="milestone">
+      <div class="milestone-date">milestone reached 2</div>
+      <div class="milestone-content">hosted first signature event sponsored by underage&overserved. we've already established partnerships with telos.haus and fractal community and hosted two collaborative events. looking to work with freelancers hub next.</div>
+    </div>
+    <div class="milestone">
+      <div class="milestone-date">mid-term goal</div>
+      <div class="milestone-content">develop signature style and continue to create and build portfolio of exclusive events. launch referral program for clients. secure first event production contract with corporate brand. </div>
+    </div>
+    <div class="milestone">
+      <div class="milestone-date">long-term goal</div>
+      <div class="milestone-content">establish reputation in market. begin receiving client referrals for high-profile events and dominate organic seo. </div>
+    </div>
+    <div><img src="https://i.imgur.com/aI2lcJ9.png" alt="Milestones and Goals Visualization" class="image-placeholder"></div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="content">
+    <p class="main-text">Thank You</p>
+    <p class="sub-text">"those who dance are considered insane by those who cannot hear the music."</p>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+let currentSlide = 0;
+
+function showSlide(index) {
+  slides[currentSlide].classList.remove('active');
+  slides[index].classList.add('active');
+  currentSlide = index;
+  
+  const content = slides[currentSlide].querySelector('.content');
+  content.classList.add('visible');
+  
+  if (currentSlide === 0) {
+    const logoUnderline = slides[currentSlide].querySelector('.logo-underline');
+    setTimeout(() => {
+      logoUnderline.classList.add('visible');
+    }, 500);
+    
+  }
+  
+  if (slides[currentSlide].querySelector('#attendanceChart')) {
+    createAttendanceChart();
+  }
+  if (slides[currentSlide].querySelector('#strategy-map')) {
+    createStrategyMap();
+  }
+  if (slides[currentSlide].querySelector('#nyMarketGrowthChart')) {
+    createNYMarketGrowthChart();
+  }
+  if (slides[currentSlide].querySelector('#marketersBeliefChart')) {
+    createMarketersBeliefChart();
+  }
+  if (slides[currentSlide].querySelector('#target-customer-mind-map')) {
+    createTargetCustomerMindMap();
+  }
+  
+  if (slides[currentSlide].querySelector('.image-grid')) {
+    animateFloatingImages();
+  }
+}
+
+function animateFloatingImages() {
+  const images = document.querySelectorAll('.float-image');
+  images.forEach((img, index) => {
+    setTimeout(() => {
+      img.style.opacity = '1';
+      img.style.animation = `float ${5 + index}s ease-in-out infinite`;
+    }, index * 300);
+  });
+}
+
+function nextSlide() {
+  let nextIndex = (currentSlide + 1) % slides.length;
+  showSlide(nextIndex);
+}
+
+function prevSlide() {
+  let prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+  showSlide(prevIndex);
+}
+
+document.addEventListener('keydown', (event) => {
+  if (event.code === 'Space' || event.code === 'ArrowRight') {
+    nextSlide();
+  } else if (event.code === 'ArrowLeft' || event.code === 'Backspace') {
+    prevSlide();
+  }
+});
+
+function createNYMarketGrowthChart() {
+  const ctx = document.getElementById('nyMarketGrowthChart').getContext('2d');
+  
+  const startValue = 77.1 / Math.pow(1.167, 10);
+  const years = Array.from({length: 11}, (_, i) => 2020 + i);
+  const marketSizes = years.map((_, i) => startValue * Math.pow(1.167, i));
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: [{
+        label: 'New York Corporate Event Market Size',
+        data: marketSizes,
+        borderColor: 'rgb(230, 166, 76)',
+        backgroundColor: 'rgba(230, 166, 76, 0.1)',
+        tension: 0.1,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Market Size (in billions $)'
+          },
+          ticks: {
+            callback: function(value) {
+              return '$' + value.toFixed(1) + 'B';
+            }
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Year'
+          }
+        }
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'New York Corporate Event Market Growth (2020-2030)',
+          font: {
+            size: 16
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return 'Market Size: $' + context.parsed.y.toFixed(1) + ' billion';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function createAttendanceChart() {
+  const ctx = document.getElementById('attendanceChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Before', 'After'],
+      datasets: [{
+        label: 'Average Attendance',
+        data: [10, 33],
+        backgroundColor: [
+          'rgba(230, 166, 76, 0.6)',
+          'rgba(230, 166, 76, 1)'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Number of Attendees'
+          }
+        }
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Event Attendance Increase',
+          font: {
+            size: 16
+          }
+        }
+      }
+    }
+  });
+}
+
+function createMarketersBeliefChart() {
+  const ctx = document.getElementById('marketersBeliefChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['stand out from competition', 'critical for business growth', 'most effective marketing channel'],
+      datasets: [{
+        label: 'marketers believe',
+        data: [84, 83, 77],
+        backgroundColor: [
+          'rgba(230, 166, 76, 0.8)',
+          'rgba(230, 166, 76, 0.6)',
+          'rgba(230, 166, 76, 0.4)'
+        ],
+        font: {
+          size: 16 // Increase font size for the dataset labels
+        }
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      scales: {
+        x: {
+          beginAtZero: true,
+          max: 100,
+          title: {
+            display: true,
+            text: 'percentage of marketers (%)',
+            font: {
+              size: 16 // Increase font size for the x-axis title
+            }
+          }
+        }
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'marketers believe events...',
+          font: {
+            size: 20,
+            family: 'Playfair Display'
+          },
+          color: '#ffffff'
+        },
+        legend: {
+          display: false
+        }
+      }
+    }
+  });
+}
+
+// Updated createTargetCustomerMindMap function
+function createTargetCustomerMindMap() {
+  const width = 1000;
+  const height = 700;
+
+  const svg = d3.select("#target-customer-mind-map")
+      .attr("width", width)
+      .attr("height", height);
+
+  // Clear any existing content in the SVG
+  svg.selectAll("*").remove();
+
+  const data = {
+    name: "target customer",
+    children: [
+      {
+        name: "founders",
+        children: [
+          { name: "technical", children: [
+            { name: "b2b" },
+            { name: "b2c" },
+            { name: "venture-backed" },
+            { name: "not venture-backed" }
+          ]},
+          { name: "non-technical", children: [
+            { name: "b2b" },
+            { name: "b2c" },
+            { name: "venture-backed" },
+            { name: "not venture-backed" }
+          ]}
+        ]
+      },
+      {
+        name: "marketers",
+        children: [
+          { name: "event leads" },
+          { name: "marketing managers" },
+          { name: "marketing directors" },
+          { name: "chief marketing officers" }
+        ]
+      },
+      {
+        name: "executive assistants",
+        children: [
+          { name: "admin focused" },
+          { name: "leadership support focused" }
+        ]
+      },
+      { name: "chief of staffs" }
+    ]
+  };
+
+  const treeLayout = d3.tree().size([height - 100, width - 400]);
+  const root = d3.hierarchy(data);
+
+  treeLayout.separation((a, b) => {
+    if (a.parent === b.parent) {
+      return 1.5;
+    } else {
+      return 2.5;
+    }
+  });
+
+  treeLayout(root);
+
+  root.each(d => {
+    d.y = d.depth * 200;
+  });
+
+  const link = svg.selectAll(".target-customer-link")
+    .data(root.links())
+    .enter().append("path")
+    .attr("class", "target-customer-link")
+    .attr("d", d3.linkHorizontal()
+      .x(d => d.y)
+      .y(d => d.x));
+
+  const node = svg.selectAll(".target-customer-node")
+    .data(root.descendants())
+    .enter().append("g")
+    .attr("class", "target-customer-node")
+    .attr("transform", d => `translate(${d.y},${d.x})`);
+
+  node.append("text")
+    .attr("dy", ".31em")
+    .attr("x", d => d.children ? -8 : 8)
+    .attr("text-anchor", d => d.children ? "end" : "start")
+    .text(d => d.data.name)
+    .style("font-size", "16px");
+
+  // Clear existing pain points
+  const painPointsContainer = d3.select(".pain-points");
+  painPointsContainer.selectAll("p").remove();
+
+  // Add pain points
+  const painPoints = [
+    { pain: "overwhelming logistics & time consuming planning", solution: "seamless end-to-end event management" },
+    { pain: "lack of creativity", solution: "unique, tailored experiences that captivate" },
+    { pain: "inconsistent quality", solution: "vetted, top-tier staff and vendors" },
+    { pain: "unmemorable events & wasted event budgets", solution: "thoughtful touches that leave lasting impressions" }
+  ];
+
+  painPoints.forEach((point, index) => {
+    painPointsContainer.append("p")
+      .html(`<strong>pain:</strong> ${point.pain}<br><span class="solution"><strong>solution:</strong> ${point.solution}</span>`)
+      .style("transition-delay", `${index * 0.2}s`);
+  });
+
+  // Animate text fade-in
+  setTimeout(() => {
+    svg.selectAll("text").style("opacity", 1);
+    d3.selectAll(".pain-points p").style("opacity", 1);
+  }, 500);
+}
+
+// Updated createStrategyMap function
+function createStrategyMap() {
+  const container = document.getElementById('strategy-map');
+  const width = container.offsetWidth;
+  const height = container.offsetHeight;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  
+  // Clear existing content
+  container.innerHTML = '';
+  
+  const nodes = [
+    { label: 'Underage&Overserved', x: 0, y: 0 },
+    { label: 'SEO', x: 0.4, y: -0.4 },
+    { label: 'Domains', x: 0.8, y: -0.4 },
+    { label: 'manhattanparty\nphotographer.com', x: 1.2, y: -0.5 },
+    { label: 'brooklynparty\nphotographer.com', x: 1.2, y: -0.3 },
+    { label: 'brooklynevent\nphotography.com', x: 1.2, y: 0.3 },
+    { label: 'nycevent\nplanner.xyz', x: 1.2, y: 0.5 },
+    { label: 'Photography', x: 0.4, y: 0.4 },
+    { label: 'branded U&O\npolaroids', x: 0.8, y: 0.5 },
+    { label: 'Events', x: -0.4, y: 0 },
+    { label: 'Partnerships', x: -0.8, y: 0 },
+    { label: 'freelancers union', x: -1.2, y: -0.4 },
+    { label: 'telos.haus', x: -1.2, y: 0 },
+    { label: 'fractal community', x: -1.2, y: 0.4 },
+    { label: 'TaskRabbit', x: 0, y: 0.6 },
+    { label: 'Merch', x: -0.4, y: -0.5 },
+    { label: 'magnets', x: -0.8, y: -0.6 },
+    { label: 'totes', x: -0.4, y: -0.6 },
+    { label: 'stickers', x: 0, y: -0.6 },
+    { label: 'Creatives on Fire', x: -0.8, y: -0.4 },
+    { label: 'timeline event\nplanning tool', x: 0.4, y: -0.6 },
+    { label: 'monetization', x: 0.8, y: -0.6 },
+    { label: 'Staffing', x: -0.2, y: 0.4 },
+    { label: 'Bartending', x: -0.4, y: 0.5 },
+    { label: 'Production', x: -0.6, y: 0.4 },
+    { label: 'Floral', x: -0.8, y: 0.5 },
+    { label: 'Consulting', x: -1.0, y: 0.4 },
+  ];
+  
+  const connections = [
+    [0, 1], [0, 7], [0, 9], [0, 10], [0, 14], [0, 15], [0, 19],
+    [1, 2], [2, 3], [2, 4], [2, 5], [2, 6],
+    [7, 8], [7, 9],
+    [9, 10], [10, 11], [10, 12], [10, 13],
+    [15, 16], [15, 17], [15, 18],
+    [0, 20], [20, 21], [20, 1],
+    [14, 9], [14, 7],
+    [8, 15], [8, 9],
+    [15, 9],
+    [19, 9],
+    [19, 10],
+    [0, 22], [22, 9],
+    [0, 23], [23, 9],
+    [0, 24], [24, 9],
+    [0, 25], [25, 9],
+    [0, 26], [26, 9],
+    [3, 7], [4, 7], [5, 7],
+    [6, 9],
+  ];
+  
+  const scaleFactor = 0.45; // Increase this value to add more space between items
+  
+  nodes.forEach((node, index) => {
+    const nodeElement = document.createElement('div');
+    nodeElement.className = 'mind-map-node';
+    nodeElement.style.left = `${centerX + node.x * width * scaleFactor}px`;
+    nodeElement.style.top = `${centerY + node.y * height * scaleFactor}px`;
+    nodeElement.innerHTML = node.label.replace('\n', '<br>');
+    container.appendChild(nodeElement);
+  });
+  
+  connections.forEach(([fromIndex, toIndex], index) => {
+    const fromNode = nodes[fromIndex];
+    const toNode = nodes[toIndex];
+    const line = document.createElement('div');
+    line.className = 'mind-map-line';
+    const fromX = centerX + fromNode.x * width * scaleFactor;
+    const fromY = centerY + fromNode.y * height * scaleFactor;
+    const toX = centerX + toNode.x * width * scaleFactor;
+    const toY = centerY + toNode.y * height * scaleFactor;
+    const length = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
+    line.style.width = `${length}px`;
+    line.style.left = `${fromX}px`;
+    line.style.top = `${fromY}px`;
+    const angle = Math.atan2(toY - fromY, toX - fromX) * (180 / Math.PI);
+    line.style.transform = `rotate(${angle}deg)`;
+    
+    line.style.animationDelay = `${index * 0.1}s`;
+    
+    container.appendChild(line);
+  });
+}
+
+// Touch support functions
+let touchStartX = 0;
+let touchEndX = 0;
+
+function checkDirection() {
+  if (touchEndX < touchStartX) nextSlide();
+  if (touchEndX > touchStartX) prevSlide();
+}
+
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  checkDirection();
+});
+
+// Enable advancing slides on tap for mobile devices
+document.addEventListener('click', (event) => {
+  if (event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON') {
+    nextSlide();
+  }
+});
+
+// Initialize the first slide
+showSlide(0);
+</script>
+</body>
+</html>
